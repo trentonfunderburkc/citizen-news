@@ -25,6 +25,14 @@ const ALLOW_FALLBACK = process.env.ALLOW_FALLBACK === 'true';
 const RESET = process.argv.includes('--reset');
 const CONFIRM_RESET =
   process.argv.includes('--confirm-reset') || process.env.CONFIRM_RESET === 'true';
+const REWRITE_MIN_CHARS = parseInt(process.env.REWRITE_MIN_CHARS || '1000', 10);
+const REWRITE_MAX_CHARS = parseInt(process.env.REWRITE_MAX_CHARS || '2000', 10);
+
+const REWRITE_SYSTEM_PROMPT =
+  'Ты редактор новостного портала о пенсиях, налогах и социальных выплатах для граждан России. ' +
+  `Напиши полноценную новость объёмом ${REWRITE_MIN_CHARS}–${REWRITE_MAX_CHARS} символов (4–6 абзацев). ` +
+  'Сохрани все цифры, даты, имена и факты из оригинала. Не выдумывай то, чего нет в исходнике. ' +
+  'Стиль: нейтральный, понятный обычному гражданину. Язык русский. Без markdown и заголовков.';
 const API_TIMEOUT_MS = parseInt(process.env.API_TIMEOUT_MS || '60000', 10);
 const API_DELAY_MS = parseInt(process.env.API_DELAY_MS || '500', 10);
 const RSS_RETRY_ATTEMPTS = parseInt(process.env.RSS_RETRY_ATTEMPTS || '3', 10);
@@ -65,6 +73,7 @@ const EXCLUDE_KEYWORDS = [
   'медвед', 'медведи', 'зоопарк', 'финлянд', 'бпла', 'осаго', 'микрокредит', 'заемщ',
   'кредитн', 'вклад', 'растени', 'отпуск', 'застряв', 'бывшего собствен', 'улучшить кредит',
   'набиуллин', 'теорий заговора', 'песков', 'пчел', 'самокат', 'праздник отмечают', 'сильноуважаем',
+  'теннис', 'шахмат', 'баскетбол', 'волейбол', 'хоккеист', 'фигурист', 'биатлон', 'формула-1',
 ];
 
 /** Военные/геополитика — отсекаем, если нет соцтемы в заголовке (иначе режут пенсии для участников СВО). */
@@ -393,20 +402,14 @@ function pickAuthor(authors) {
 
 function fallbackRewrite(title, originalText) {
   const text = originalText || title;
-  const sentences = text.split(/(?<=[.!?…])\s+/).filter(Boolean);
-  const kept = sentences.filter((_, i) => i % 3 !== 2);
-  let result = kept.join(' ');
-  const maxLen = Math.min(2500, Math.max(400, Math.floor(text.length * 0.3)));
-  if (result.length > maxLen) {
-    result = result.slice(0, maxLen).replace(/\s+\S*$/, '') + '…';
+  let result = text;
+  if (result.length < REWRITE_MIN_CHARS) {
+    result = `${title}. ${result} Подробности уточняются в официальных источниках.`;
   }
-  if (result.length < 150 && text.length > 150) {
-    result = text.slice(0, maxLen).replace(/\s+\S*$/, '') + '…';
+  if (result.length > REWRITE_MAX_CHARS) {
+    result = result.slice(0, REWRITE_MAX_CHARS).replace(/\s+\S*$/, '') + '…';
   }
-  if (result.length < 150) {
-    result = `${title}. ${result}`;
-  }
-  return result.slice(0, 2500);
+  return result;
 }
 
 async function aiRewrite(title, originalText) {
@@ -422,11 +425,11 @@ async function aiRewrite(title, originalText) {
       }
 
       let text;
+      const sourceSlice = originalText.slice(0, 4000);
       if (provider.type === 'gemini') {
         text = await geminiGenerateText({
-          system:
-            'Перескажи новость объёмом не более 30% от оригинала для портала о пенсиях, налогах и социальных выплатах. Сохрани ключевые цифры, даты и факты. Стиль: нейтральный, понятный обычному гражданину. Язык русский. Без markdown.',
-          user: `Заголовок: ${title}\n\nОригинал:\n${originalText.slice(0, 4000)}`,
+          system: REWRITE_SYSTEM_PROMPT,
+          user: `Заголовок: ${title}\n\nОригинал:\n${sourceSlice}`,
         });
       } else {
         const response = await withRetry(
@@ -440,17 +443,10 @@ async function aiRewrite(title, originalText) {
             return client.chat.completions.create({
               model: provider.model,
               messages: [
-                {
-                  role: 'system',
-                  content:
-                    'Перескажи новость объёмом не более 30% от оригинала для портала о пенсиях, налогах и социальных выплатах. Сохрани ключевые цифры, даты и факты. Стиль: нейтральный, понятный обычному гражданину. Язык русский. Без markdown.',
-                },
-                {
-                  role: 'user',
-                  content: `Заголовок: ${title}\n\nОригинал:\n${originalText.slice(0, 4000)}`,
-                },
+                { role: 'system', content: REWRITE_SYSTEM_PROMPT },
+                { role: 'user', content: `Заголовок: ${title}\n\nОригинал:\n${sourceSlice}` },
               ],
-              max_tokens: 800,
+              max_tokens: 1500,
             });
           },
           { attempts: 3, label: `AI ${provider.name}` }
@@ -458,11 +454,14 @@ async function aiRewrite(title, originalText) {
         text = response.choices[0]?.message?.content?.trim();
       }
 
-      if (text && text.length > 100) {
+      if (text && text.length >= Math.min(REWRITE_MIN_CHARS, 800)) {
+        if (text.length > REWRITE_MAX_CHARS) {
+          text = text.slice(0, REWRITE_MAX_CHARS).replace(/\s+\S*$/, '') + '…';
+        }
         console.log(
-          `  [${provider.name}] рерайт: ${originalText.length} → ${text.length} символов (${Math.round((text.length / originalText.length) * 100)}%)`
+          `  [${provider.name}] рерайт: ${originalText.length} → ${text.length} символов`
         );
-        return text.slice(0, 2500);
+        return text;
       }
     } catch (err) {
       console.warn(`  [${provider.name}] ошибка: ${err.message}`);

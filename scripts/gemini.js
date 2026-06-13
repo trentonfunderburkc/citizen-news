@@ -29,7 +29,7 @@ export async function geminiGenerateText({ system, user, model = getGeminiTextMo
   const url = `${API_BASE}/models/${model}:generateContent`;
   const body = {
     contents: [{ role: 'user', parts: [{ text: user }] }],
-    generationConfig: { maxOutputTokens: 1024 },
+    generationConfig: { maxOutputTokens: 2048 },
   };
   if (system) {
     body.systemInstruction = { parts: [{ text: system }] };
