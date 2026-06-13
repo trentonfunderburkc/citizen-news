@@ -2,19 +2,14 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 
-const repoName =
-  process.env.GITHUB_REPOSITORY?.split('/')[1] ||
-  process.env.REPO_NAME ||
-  'citizen-news';
-const owner =
-  process.env.GITHUB_REPOSITORY?.split('/')[0] ||
-  process.env.GITHUB_OWNER ||
-  'example';
+const siteUrl =
+  process.env.SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'https://grazhdanin-media.ru');
 
 // https://astro.build/config
 export default defineConfig({
-  site: process.env.SITE_URL || `https://${owner}.github.io`,
-  base: process.env.BASE_PATH || `/${repoName}/`,
+  site: siteUrl,
+  base: process.env.BASE_PATH || '/',
   vite: {
     plugins: [tailwindcss()],
   },

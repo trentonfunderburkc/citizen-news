@@ -1,34 +1,32 @@
-# Гражданин — социальный новостник
+# Гражданин — новостной портал
 
-Готовый статический сайт-агрегатор социальных новостей. **Клонируйте → включите GitHub Pages → готово.**
+Статический сайт на Astro 6: пенсии, налоги, выплаты и социальная помощь. RSS → рерайт → деплой.
 
-## Деплой за 3 шага
+## Деплой на Vercel (рекомендуется)
 
-### 1. Создайте репозиторий на GitHub
+1. Зайдите на [vercel.com/new](https://vercel.com/new)
+2. **Import Git Repository** → выберите `trentonfunderburkc/citizen-news` (или свой форк)
+3. Vercel сам определит Astro — **Deploy** без изменений настроек
 
-Название репозитория — любое (например `citizen-news` или `grazhdanin`).
+После деплоя сайт откроется по адресу вида `https://citizen-news-xxx.vercel.app`.
 
-### 2. Запушьте код
+### Переменные в Vercel (Settings → Environment Variables)
 
-```bash
-git add .
-git commit -m "feat: Гражданин — социальный новостник"
-git branch -M main
-git remote add origin https://github.com/ВАШ_ЛОГИН/ИМЯ_РЕПО.git
-git push -u origin main
+| Переменная | Production | Зачем |
+|---|---|---|
+| `PUBLIC_ENABLE_METRIKA` | `true` | Яндекс.Метрика |
+| `PUBLIC_YANDEX_METRIKA_ID` | ваш ID | Счётчик |
+| `SITE_URL` | `https://ваш-домен.ru` | Sitemap, Open Graph (если свой домен) |
+
+Секреты для **локального** fetch статей — только в `.env`, в Vercel для сайта не нужны (контент уже в репозитории).
+
+### Свой домен
+
+Vercel → Project → **Settings → Domains** → добавьте домен и укажите:
+
 ```
-
-### 3. Включите GitHub Pages
-
-**Settings → Pages → Build and deployment → Source: GitHub Actions**
-
-После первого push workflow автоматически соберёт и опубликует сайт:
-
+SITE_URL=https://grazhdanin-media.ru
 ```
-https://ВАШ_ЛОГИН.github.io/ИМЯ_РЕПО/
-```
-
-> `base` и `site` подставляются автоматически из имени репозитория — ничего менять не нужно.
 
 ---
 
@@ -39,75 +37,36 @@ npm install
 npm run dev
 ```
 
-Сайт: [http://localhost:4321/citizen-news/](http://localhost:4321/citizen-news/)
-
-> Локально `base` по умолчанию `/citizen-news/`. Для другого имени репо:  
-> `set REPO_NAME=ваш-репо && npm run dev`
+Сайт: [http://localhost:4321/](http://localhost:4321/)
 
 ---
 
-## Что уже готово
-
-- **50 статей** из реальных RSS-источников (Такие дела, ТАСС, Интерфакс, Pravmir, Благосфера и др.)
-- **10 авторов** с аватарками
-- **Комментарии** к каждой статье
-- **CI/CD** — автодеплой при push в `main`
-- **Еженедельное обновление** — workflow `fetch-new.yml` (до 10 новых статей)
-
----
-
-## RSS-источники (проверенные)
-
-| Источник | Категория |
-|---|---|
-| [Такие дела](https://te-st.org/) | Благотворительность |
-| [Такие дела — Экология](https://te-st.org/tag/ecology/) | Экология |
-| [Благосфера](https://blagosfera.ru/) | Волонтёрство |
-| [Pravmir](https://www.pravmir.ru/) | Благотворительность |
-| [ТАСС — Общество](https://tass.ru/) | Социальная помощь |
-| [ТАСС — Экология](https://tass.ru/) | Экология |
-| [Интерфакс — Общество](https://www.interfax.ru/) | Социальная помощь |
-| [РИА Новости — Общество](https://ria.ru/) | Социальная помощь |
-| [Газета.Ru — Социальные](https://www.gazeta.ru/) | Город |
-| [Ведомости](https://www.vedomosti.ru/) | Город |
-
-Для общих новостных лент (ТАСС, Интерфакс и др.) включена **фильтрация по социальным ключевым словам**.
-
----
-
-## Обновление контента
+## Обновление контентa
 
 ```bash
-# Полная перегенерация (50 статей заново)
-npm run setup:content
-
-# Только новые статьи (без удаления старых)
-npm run fetch:articles
+npm run fetch:articles          # новые статьи из RSS
+npm run fetch:articles:reset    # полная перегенерация
+npm run seed:comments
 ```
+
+GitHub Actions (`fetch-new.yml`) может добавлять статьи по расписанию — после push Vercel пересоберёт сайт автоматически.
 
 ---
 
-## Переменные окружения (опционально)
+## Переменные `.env` (локально / CI для fetch)
 
 Скопируйте `.env.example` → `.env`:
 
 | Переменная | Зачем |
 |---|---|
-| `OPENAI_API_KEY` | Резервный рерайт + **AI-картинки** (`gpt-image-1`) |
-| `IMAGE_PROVIDER` | `openai` / `unsplash` / `picsum` — источник иллюстраций |
-| `AI_PROVIDER` | `deepseek` / `openai` — провайдер рерайта |
-| `UNSPLASH_ACCESS_KEY` | Фото из Unsplash (без ключа — Picsum) |
-| `PUBLIC_ENABLE_METRIKA` | Яндекс.Метрика (`true`/`false`) |
-| `YANDEX_METRIKA_ID` | ID счётчика |
-
-Secrets для GitHub Actions: **Settings → Secrets → Actions**
+| `GEMINI_API_KEY` | Картинки + резервный рерайт |
+| `DEEPSEEK_API_KEY` | Основной рерайт |
+| `OPENAI_API_KEY` | Резерв рерайта и картинок |
+| `IMAGE_PROVIDER` | `gemini` / `openai` / `unsplash` |
+| `AI_PROVIDER` | `deepseek` / `openai` / `gemini` |
 
 ---
 
 ## Стек
 
-Astro 6 · Tailwind CSS 4 · TypeScript · rss-parser · GitHub Pages
-
-## Юридическая модель
-
-Материалы цитируются со ссылкой на первоисточник (ст. 1274 ГК РФ). Объём пересказа — не более 30% от оригинала.
+Astro 6 · Tailwind CSS 4 · Gemini · DeepSeek · Vercel

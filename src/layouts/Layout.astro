@@ -31,7 +31,7 @@ const ogImage = image
   : absoluteUrl('favicon.svg', siteUrl, base);
 
 const enableMetrika = import.meta.env.PUBLIC_ENABLE_METRIKA === 'true';
-const metrikaId = import.meta.env.YANDEX_METRIKA_ID || '99999999';
+const metrikaId = import.meta.env.PUBLIC_YANDEX_METRIKA_ID || import.meta.env.YANDEX_METRIKA_ID || '99999999';
 
 const orgJsonLd = {
   '@context': 'https://schema.org',
