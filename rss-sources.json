@@ -1,0 +1,17 @@
+[
+  { "name": "ТАСС — Общество", "url": "https://tass.ru/rss/v2.xml?section=7", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "ТАСС — Экономика", "url": "https://tass.ru/rss/v2.xml?section=4", "category": "Налоги", "filter": true, "strict": true },
+  { "name": "РИА Новости — Общество", "url": "https://ria.ru/export/rss2/index.xml?category=society", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "РИА Новости — Экономика", "url": "https://ria.ru/export/rss2/index.xml?category=economy", "category": "Налоги", "filter": true, "strict": true },
+  { "name": "Интерфакс — Общество", "url": "https://www.interfax.ru/rss.asp?sec=1449", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "Интерфакс — Экономика", "url": "https://www.interfax.ru/rss.asp?sec=4", "category": "Налоги", "filter": true, "strict": true },
+  { "name": "Интерфакс — Главное", "url": "https://www.interfax.ru/rss.asp", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "Газета.Ru — Социальные", "url": "https://www.gazeta.ru/export/rss/social.xml", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "Lenta.ru — Экономика", "url": "https://lenta.ru/rss/news/economics", "category": "Налоги", "filter": true, "strict": true },
+  { "name": "Lenta.ru — Россия", "url": "https://lenta.ru/rss/news/russia", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "Ведомости", "url": "https://www.vedomosti.ru/rss/news", "category": "Пенсии", "filter": true, "strict": true },
+  { "name": "МК — Новости", "url": "https://www.mk.ru/rss/news/index.xml", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "РБК — Общество", "url": "https://rssexport.rbc.ru/rbcnews/news/30/full.rss", "category": "Социальная помощь", "filter": true, "strict": true },
+  { "name": "Российская газета", "url": "https://rg.ru/xml/index.xml", "category": "Пенсии", "filter": true, "strict": true },
+  { "name": "Парламентская газета", "url": "https://www.pnp.ru/rss/", "category": "Пенсии", "filter": true, "strict": true }
+]

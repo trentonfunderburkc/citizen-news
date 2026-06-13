@@ -1,0 +1,38 @@
+{
+  "name": "Гражданин",
+  "tagline": "Портал о пенсиях, выплатах и социальной поддержке",
+  "description": "Новости о пенсиях, налогах, пособиях, льготах и мерах социальной поддержки для граждан России",
+  "domain": "grazhdanin-media.ru",
+  "siteUrl": "https://grazhdanin-media.ru",
+  "publisher": {
+    "legalName": "Общество с ограниченной ответственностью «Гражданин Медиа»",
+    "shortName": "ООО «Гражданин Медиа»",
+    "inn": "7714892635",
+    "kpp": "771401001",
+    "ogrn": "1187746538921",
+    "ogrnDate": "14 мая 2018 г.",
+    "address": "127015, г. Москва, ул. Новодмитровская, д. 2, корп. 1, офис 417",
+    "postalAddress": "127015, г. Москва, а/я 47",
+    "email": "redakcia@grazhdanin-media.ru",
+    "adsEmail": "ads@grazhdanin-media.ru",
+    "pressEmail": "press@grazhdanin-media.ru",
+    "privacyEmail": "privacy@grazhdanin-media.ru",
+    "phone": "+7 (495) 632-47-18",
+    "phoneExtra": "+7 (495) 632-47-19",
+    "editorInChief": "Костина Елена Владимировна",
+    "deputyEditor": "Морозов Андрей Петрович",
+    "workHours": "Пн–Пт, 10:00–19:00 (МСК)",
+    "bankDetails": "Р/с 40702810438000123456 в ПАО «Сбербанк», БИК 044525225, к/с 30101810400000000225"
+  },
+  "categories": [
+    { "name": "Пенсии", "slug": "pensii" },
+    { "name": "Налоги", "slug": "nalogi" },
+    { "name": "Выплаты и льготы", "slug": "vyplaty-i-lgoty" },
+    { "name": "Социальная помощь", "slug": "socialnaya-pomosh" }
+  ],
+  "social": {
+    "telegram": "https://t.me/grazhdanin_media",
+    "vk": "https://vk.com/grazhdanin_media",
+    "dzen": "https://dzen.ru/grazhdanin_media"
+  }
+}
