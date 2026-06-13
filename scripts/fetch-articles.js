@@ -481,8 +481,10 @@ function writePlaceholderImage(slug) {
   return { path: `/images/stories/${slug}.svg`, credit: 'Placeholder' };
 }
 
-function reuseExistingImage(slug) {
-  for (const ext of ['.jpg', '.jpeg', '.webp', '.svg']) {
+function reuseExistingImage(slug, { allowPlaceholder = false } = {}) {
+  const real = ['.jpg', '.jpeg', '.webp'];
+  const all = allowPlaceholder ? [...real, '.svg'] : real;
+  for (const ext of all) {
     const file = path.join(imagesDir, `${slug}${ext}`);
     if (fs.existsSync(file)) {
       return {
@@ -607,6 +609,8 @@ async function fetchUnsplashImage(keywords, slug, title, category, body = '') {
   }
 
   if (SKIP_IMAGES) {
+    const placeholder = reuseExistingImage(slug, { allowPlaceholder: true });
+    if (placeholder) return placeholder;
     console.log('  [Image] пропуск — placeholder (SKIP_IMAGES)');
     return writePlaceholderImage(slug);
   }
