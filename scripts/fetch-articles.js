@@ -76,7 +76,7 @@ const EXCLUDE_KEYWORDS = [
   'теннис', 'шахмат', 'баскетбол', 'волейбол', 'хоккеист', 'фигурист', 'биатлон', 'формула-1',
   'бракоразвод', 'развод', 'разводн', 'шпион', 'экранизац', 'starmer', 'starlink', 'xinhua',
   'математик', 'ягод', 'lori', 'лори', 'кино', 'актрис', 'чурсин', 'экраниза',
-  'израил', 'ливан', 'палестин', 'сирия', 'иран',
+  'израил', 'ливан', 'палестин', 'сирия', 'иран', 'дтп', 'маршрутк',
 ];
 
 /** Военные/геополитика — отсекаем, если нет соцтемы в заголовке (иначе режут пенсии для участников СВО). */
@@ -314,13 +314,17 @@ function getExistingSlugs() {
   );
 }
 
+function normalizeUrl(url) {
+  return (url || '').replace(/\/$/, '').trim();
+}
+
 function getExistingSourceUrls() {
   if (!fs.existsSync(storiesDir)) return new Set();
   const urls = new Set();
   for (const file of fs.readdirSync(storiesDir).filter((f) => f.endsWith('.md'))) {
     const content = fs.readFileSync(path.join(storiesDir, file), 'utf-8');
-    const match = content.match(/source_url:\s*['"]?([^\s'"]+)/);
-    if (match) urls.add(match[1]);
+    const match = content.match(/source_url:\s*(?:>\-?\s*\n\s*)?["']?(https?:\/\/[^\s"'>\n]+)/);
+    if (match) urls.add(normalizeUrl(match[1]));
   }
   return urls;
 }
@@ -828,7 +832,7 @@ async function main() {
 
         for (const item of items) {
           if (count >= stopAt) break;
-          if (!item.link || existingUrls.has(item.link)) continue;
+          if (!item.link || existingUrls.has(normalizeUrl(item.link))) continue;
 
           const itemDate = parseItemDate(item);
           if (!itemDate) {
@@ -869,7 +873,7 @@ async function main() {
               existingSlugs
             );
 
-            existingUrls.add(item.link);
+            existingUrls.add(normalizeUrl(item.link));
             count++;
 
             if (API_DELAY_MS > 0 && !SKIP_IMAGES) {
