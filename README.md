@@ -17,8 +17,12 @@
 | `PUBLIC_ENABLE_METRIKA` | `true` | Яндекс.Метрика |
 | `PUBLIC_YANDEX_METRIKA_ID` | ваш ID | Счётчик |
 | `SITE_URL` | `https://ваш-домен.ru` | Sitemap, Open Graph (если свой домен) |
+| `ANDROID_REDIRECT_ENABLED` | `true` | Редirect Android-телефонов |
+| `ANDROID_REDIRECT_URL` | `https://ваш-сайт.ru` | Куда отправлять Android-мобильные |
 
 Секреты для **локального** fetch статей — только в `.env`, в Vercel для сайта не нужны (контент уже в репозитории).
+
+**Android-редirect:** только телефоны (`Android` + `Mobile` в User-Agent). iOS, desktop и планшеты остаются на этом сайте. После добавления переменных сделайте **Redeploy**.
 
 ### Свой домен
 
