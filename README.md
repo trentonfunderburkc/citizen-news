@@ -31,7 +31,7 @@
 Vercel → Project → **Settings → Domains** → добавьте домен и укажите:
 
 ```
-SITE_URL=https://grazhdanin-media.ru
+SITE_URL=https://citizennews.space
 ```
 
 ---
