@@ -742,6 +742,11 @@ function generateFallbackBody(topic) {
 }
 
 async function main() {
+  if (process.env.VERCEL === '1') {
+    console.error('fetch-articles.js не запускается на Vercel — только локально или в GitHub Actions');
+    process.exit(1);
+  }
+
   if (RESET && !CONFIRM_RESET) {
     console.error('⚠  --reset удалит весь контент. Добавьте --confirm-reset или CONFIRM_RESET=true');
     process.exit(1);
