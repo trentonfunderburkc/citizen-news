@@ -17,8 +17,13 @@ if (!curr) {
   process.exit(1);
 }
 
-if (!prev || prev === curr) {
-  console.log('[vercel-should-build] тот же коммит или redeploy — сбор пропущен');
+if (!prev) {
+  console.log('[vercel-should-build] первый деплой — запускаем astro build');
+  process.exit(1);
+}
+
+if (prev === curr) {
+  console.log('[vercel-should-build] redeploy того же коммита — сбор пропущен');
   process.exit(0);
 }
 
