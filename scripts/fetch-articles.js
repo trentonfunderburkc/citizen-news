@@ -32,6 +32,7 @@ const imageProviderSetting = (process.env.IMAGE_PROVIDER || (isGeminiConfigured(
 const SKIP_IMAGES =
   process.env.SKIP_IMAGES === 'true' ||
   ['none', 'skip', 'placeholder', 'off'].includes(imageProviderSetting);
+const FORCE_IMAGES = process.env.FORCE_IMAGES === 'true';
 const parser = new Parser({
   timeout: 20000,
   headers: { 'User-Agent': 'CitizenNewsBot/1.0 (+https://github.com/citizen-news)' },
@@ -597,12 +598,15 @@ function imageKeywords(title, category) {
 }
 
 async function fetchUnsplashImage(keywords, slug, title, category, body = '') {
-  if (SKIP_IMAGES) {
+  if (!FORCE_IMAGES) {
     const existing = reuseExistingImage(slug);
     if (existing) {
       console.log('  [Image] пропуск — уже есть файл на диске');
       return existing;
     }
+  }
+
+  if (SKIP_IMAGES) {
     console.log('  [Image] пропуск — placeholder (SKIP_IMAGES)');
     return writePlaceholderImage(slug);
   }
