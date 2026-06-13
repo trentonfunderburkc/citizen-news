@@ -14,6 +14,7 @@
     "fetch:articles": "node scripts/fetch-articles.js",
     "fetch:articles:reset": "node scripts/fetch-articles.js --reset --confirm-reset",
     "seed:comments": "node scripts/seed-comments.js",
+    "fix:images": "node scripts/fix-images.js",
     "setup:content": "npm run generate:authors && npm run fetch:articles:reset && npm run seed:comments"
   },
   "dependencies": {

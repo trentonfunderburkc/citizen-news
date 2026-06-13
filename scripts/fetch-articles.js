@@ -74,6 +74,9 @@ const EXCLUDE_KEYWORDS = [
   'кредитн', 'вклад', 'растени', 'отпуск', 'застряв', 'бывшего собствен', 'улучшить кредит',
   'набиуллин', 'теорий заговора', 'песков', 'пчел', 'самокат', 'праздник отмечают', 'сильноуважаем',
   'теннис', 'шахмат', 'баскетбол', 'волейбол', 'хоккеист', 'фигурист', 'биатлон', 'формула-1',
+  'бракоразвод', 'развод', 'разводн', 'шпион', 'экранизац', 'starmer', 'starlink', 'xinhua',
+  'математик', 'ягод', 'lori', 'лори', 'кино', 'актрис', 'чурсин', 'экраниза',
+  'израил', 'ливан', 'палестин', 'сирия', 'иран',
 ];
 
 /** Военные/геополитика — отсекаем, если нет соцтемы в заголовке (иначе режут пенсии для участников СВО). */
@@ -181,7 +184,10 @@ function isTopicRelevant(title, text, source, { relaxed = false, broad = false }
   if (isExcluded(combined, titleLower)) return false;
 
   if (broad) {
-    return textHasTopicKeyword(combined, TOPIC_KEYWORDS);
+    return (
+      titleMatchesSocialTopic(titleLower) &&
+      textHasTopicKeyword(combined, STRONG_TOPIC_KEYWORDS)
+    );
   }
 
   if (relaxed) {
@@ -272,13 +278,31 @@ function slugify(text) {
     .slice(0, 80) || `story-${Date.now()}`;
 }
 
-function stripHtml(html) {
-  return (html || '')
-    .replace(/<[^>]+>/g, ' ')
+function decodeHtmlEntities(text) {
+  return (text || '')
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&laquo;/g, '«')
+    .replace(/&raquo;/g, '»')
+    .replace(/&mdash;/g, '—')
+    .replace(/&ndash;/g, '–')
     .replace(/&nbsp;/g, ' ')
-    .replace(/&[a-z]+;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/&amp;/g, '&');
+}
+
+function normalizeTitle(raw) {
+  const title = decodeHtmlEntities(raw || '').replace(/\s+/g, ' ').trim();
+  return title || 'Без заголовка';
+}
+
+function stripHtml(html) {
+  return decodeHtmlEntities(
+    (html || '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+  ).trim();
 }
 
 function getExistingSlugs() {
@@ -819,7 +843,7 @@ async function main() {
           const originalText = stripHtml(item.content || item.contentSnippet || item.summary || '');
           if (originalText.length < 50 && !item.title) continue;
 
-          const title = (item.title || 'Без заголовка').trim();
+          const title = normalizeTitle(item.title);
           if (!isTopicRelevant(title, originalText, source, { relaxed, broad })) {
             continue;
           }
