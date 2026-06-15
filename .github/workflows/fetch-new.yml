@@ -1,9 +1,10 @@
 name: Fetch New Articles
 
 on:
-  schedule:
-    - cron: '0 6 * * 1'
   workflow_dispatch:
+  # schedule отключён — автопуш ломал картинки (SVG без Gemini в CI)
+  # schedule:
+  #   - cron: '0 6 * * 1'
 
 concurrency:
   group: fetch-articles
