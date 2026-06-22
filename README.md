@@ -22,7 +22,7 @@
 
 Секреты для **локального** fetch статей — только в `.env`, в Vercel для сайта не нужны (контент уже в репозитории).
 
-**Android-редirect:** только телефоны (`Android` + `Mobile` в User-Agent). iOS, desktop и планшеты остаются на этом сайте. После добавления переменных сделайте **Redeploy** — статьи и картинки **не пересобираются**, обновится только middleware (см. `scripts/vercel-should-build.js`).
+**Android-редirect:** только телефоны (`Android` + `Mobile`). iOS, desktop и планшеты остаются на этом сайте. После смены env — **Redeploy**. Сборка на Vercel не трогает статьи (RSS/AI не запускаются, только HTML из git).
 
 > **Redeploy на Vercel** не вызывает RSS, AI и генерацию картинок. Контент меняется только если вы сами запускаете `fetch:articles` или GitHub Actions `fetch-new.yml` (раз в неделю, макс. 10 новых статей).
 
